@@ -1,3 +1,4 @@
+import { tokens } from "../../constants/tokens";
 import {
   NumberWallet,
   Subtile,
@@ -12,10 +13,10 @@ const PolygonBalance = ({ polygon, wallet }) => {
         <Title>Polygon Balance:</Title>
         <Subtile>Public</Subtile>
         <Text>
-          -- <span>{polygon.usdt}</span> USDT
+          -- <span>{polygon.usdt / 10 ** tokens.USDT.decimals}</span> USDT
         </Text>
         <Text>
-          -- <span>{polygon.wmatic}</span> WMATIC
+          -- <span>{polygon.wmatic / 10 ** tokens.WMATIC.decimals}</span> WMATIC
         </Text>
         <NumberWallet style={{ marginTop: "150px" }}>{wallet}</NumberWallet>
       </div>

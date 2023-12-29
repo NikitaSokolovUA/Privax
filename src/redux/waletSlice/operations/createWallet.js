@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://167.235.234.132:8000";
+axios.defaults.baseURL = "http://167.235.234.132:7777";
 
 export const createWallet = createAsyncThunk(
   "wallet/createWallet",

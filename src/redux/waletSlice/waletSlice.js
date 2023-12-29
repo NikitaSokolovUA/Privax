@@ -21,8 +21,8 @@ const walletSlice = createSlice({
         state.error = null;
       })
       .addCase(createWallet.fulfilled, (state, action) => {
-        state.walletId = action.payload.walletId;
-        state.walletAddress = action.payload.walletAddress;
+        state.walletId = action.payload.data.walletId;
+        state.walletAddress = action.payload.data.walletAddress;
         state.loading = false;
       })
       .addCase(createWallet.rejected, (state, action) => {
@@ -30,10 +30,10 @@ const walletSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(getBridgeBalance.fulfilled, (state, action) => {
-        state.bridgeBalance = action.payload;
+        state.bridgeBalance = action.payload.data;
       })
       .addCase(getAztecBalance.fulfilled, (state, action) => {
-        state.aztecBalance = action.payload;
+        state.aztecBalance = action.payload.data;
       });
   },
 });

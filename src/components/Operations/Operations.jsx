@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { BtnBox, BtnType, OperationsBox } from "./Operations.styled";
 import MintOperation from "../MintOperation/MintOperation";
-import Operation from "../Operation/Operation";
+import UnshieldOperation from "../UnshieldOperation/UnshieldOperation";
+import SwapOperation from "../SwapOperation/SwapOperation";
 
 const Operations = () => {
-  const [type, setType] = useState("normie");
+  const [type, setType] = useState("public");
   return (
     <OperationsBox>
       <BtnBox>
         <BtnType
-          active={(type === "normie").toString()}
-          onClick={() => setType("normie")}
+          active={(type === "public").toString()}
+          onClick={() => setType("public")}
         >
-          Normie
+          Public
         </BtnType>
         <BtnType
           active={(type === "private").toString()}
@@ -22,9 +23,9 @@ const Operations = () => {
         </BtnType>
       </BtnBox>
 
-      <MintOperation />
-      {/* <Operation subtitle="Mint" /> */}
-      <Operation />
+      <MintOperation type={type} />
+      <UnshieldOperation type={type} />
+      {type === "public" && <SwapOperation />}
     </OperationsBox>
   );
 };

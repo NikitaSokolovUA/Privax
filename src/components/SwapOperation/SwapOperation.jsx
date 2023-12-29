@@ -1,17 +1,20 @@
 import { MenuItem } from "@mui/material";
 import {
   OperationBox,
-  Select,
   Subtitle,
+  Select,
   SubmitBtn,
-  CounterContainer,
   CounterButton,
-} from "./MintOperation.styled";
+  CounterContainer,
+} from "./SwapOperation.styled";
 import { useFormik } from "formik";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { selectWalletId } from "../../redux/waletSlice/waletSelectors";
-import { useState } from "react";
+import {
+  selectAztecBalance,
+  selectWalletId,
+} from "../../redux/waletSlice/waletSelectors";
+import { useMemo, useState } from "react";
 import FadeLoader from "react-spinners/ClipLoader";
 import { tokens } from "../../constants/tokens";
 
@@ -26,17 +29,19 @@ const currencies = [
   },
 ];
 
-const MintOperation = ({ type }) => {
+const SwapOperation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const walletId = useSelector(selectWalletId);
+
+  const balance = useSelector(selectAztecBalance);
 
   const formik = useFormik({
     initialValues: { token: "usdt", amount: 0 },
     onSubmit: (values, { resetForm }) => {
-      handleMintPrivate({
+      handleSwap({
         walletId,
-        token: values.token,
-        amount:
+        tokenFrom: values.token,
+        amountFrom:
           (Number(values.amount) / 100) *
           10 **
             (values.token === "usdt"
@@ -47,14 +52,11 @@ const MintOperation = ({ type }) => {
     },
   });
 
-  const handleMintPrivate = async (credentials) => {
+  const handleSwap = async (credentials) => {
     try {
       setIsLoading(true);
-      const response = await axios.post(
-        type === "public" ? "/mintPublic" : "/mintPrivate",
-        credentials
-      );
 
+      const response = await axios.post("/swapPublic", credentials);
       console.log(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -63,16 +65,49 @@ const MintOperation = ({ type }) => {
     }
   };
 
+  const maxValue = useMemo(() => {
+    const decimals =
+      formik.values.token === "usdt"
+        ? tokens.USDT.decimals
+        : tokens.WMATIC.decimals;
+
+    const balanceValue =
+      formik.values.token === "usdt"
+        ? balance?.public?.USDT
+        : balance?.public?.WMATIC;
+
+    const balanceMax = balanceValue / 10 ** decimals;
+
+    return balanceMax >= 0.5 ? 0.5 : balanceMax;
+  }, [balance, formik.values.token]);
+
   return (
     <OperationBox onSubmit={formik.handleSubmit}>
-      <Subtitle>Mint</Subtitle>
+      <Subtitle>Swap</Subtitle>
       <Select
         id="filled-select-currency"
         select
         label="Select"
         variant="filled"
         name="token"
-        onChange={formik.handleChange}
+        onChange={(e) => {
+          const value = e.target.value;
+
+          const valueBalance =
+            (value === "usdt"
+              ? balance?.public?.USDT
+              : balance?.public?.WMATIC) /
+            10 **
+              (value === "usdt"
+                ? tokens.USDT.decimals
+                : tokens.WMATIC.decimals);
+
+          if (formik.values.amount / 100 >= valueBalance) {
+            formik.setFieldValue("amount", valueBalance * 100);
+          }
+
+          formik.handleChange(e);
+        }}
         value={formik.values.token}
       >
         {currencies.map((option) => (
@@ -81,7 +116,8 @@ const MintOperation = ({ type }) => {
           </MenuItem>
         ))}
       </Select>
-      <Subtitle>on Aztec</Subtitle>
+      <Subtitle>balance</Subtitle>
+
       <CounterContainer>
         <CounterButton
           onClick={() =>
@@ -93,10 +129,14 @@ const MintOperation = ({ type }) => {
         </CounterButton>
         {formik.values.amount / 100}
         <CounterButton
-          onClick={() =>
-            formik.setFieldValue("amount", formik.values.amount + 1)
-          }
-          disabled={formik.values.amount / 100 >= 0.5}
+          onClick={() => {
+            if ((formik.values.amount + 1) / 100 > maxValue) {
+              formik.setFieldValue("amount", maxValue * 100);
+            }
+
+            formik.setFieldValue("amount", formik.values.amount + 1);
+          }}
+          disabled={formik.values.amount / 100 >= maxValue}
         >
           +
         </CounterButton>
@@ -110,4 +150,4 @@ const MintOperation = ({ type }) => {
   );
 };
 
-export default MintOperation;
+export default SwapOperation;

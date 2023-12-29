@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 
 export const OperationBox = styled.form`
   width: 70%;
@@ -40,6 +40,49 @@ export const Subtitle = styled.p`
 
 export const Select = styled(TextField)`
   width: 150px;
+`;
+
+export const CounterContainer = styled(Box)`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: Poppins;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  text-transform: none;
+`;
+
+export const CounterButton = styled(Button)`
+  display: flex;
+  width: 50px;
+  min-width: unset !important;
+  padding: 13px 25px;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+
+  border-radius: 15px;
+  background: #3043e9;
+  color: white;
+
+  font-family: Poppins;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  text-transform: none;
+
+  &:hover,
+  &:focus {
+    background: #d6d9fb;
+    color: #3043e9;
+  }
+  :disabled {
+    background-color: grey;
+    color: #3043e9;
+  }
 `;
 
 export const SubmitBtn = styled(Button)`
